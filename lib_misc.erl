@@ -1,7 +1,32 @@
 -module(lib_misc).
--export([count_chars/1, odds_and_evens2/1, odds_and_evens1/1,filter/2, for/3, qsort/1, pythag/1, perms/1]).
+-export([sleep/1, flush_buffer/0, priority_receive/0, count_chars/1, odds_and_evens2/1, odds_and_evens1/1,filter/2, for/3, qsort/1, pythag/1, perms/1]).
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F)   -> [F(I)|for(I+1, Max, F)].
+
+sleep(T) ->
+    receive
+    after T ->
+            true
+    end.
+
+flush_buffer() ->
+    receive
+        _Any ->
+            flush_buffer()
+    after 0 ->
+            true
+    end.
+
+priority_receive() ->
+    receive
+        {alarm, X} ->
+            {alarm, X}
+    after 0 ->
+            receive
+                Any ->
+                    Any
+            end
+    end.
 
 count_chars(Str)  ->
     count_char(Str, #{}).
