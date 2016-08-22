@@ -1,8 +1,24 @@
 -module(lib_misc).
--export([keep_alive/2, on_exit/2, sleep/1, flush_buffer/0, priority_receive/0, count_chars/1, odds_and_evens2/1, odds_and_evens1/1,filter/2, for/3, qsort/1, pythag/1, perms/1]).
+-export([consult/1, keep_alive/2, on_exit/2, sleep/1, flush_buffer/0, priority_receive/0, count_chars/1, odds_and_evens2/1, odds_and_evens1/1,filter/2, for/3, qsort/1, pythag/1, perms/1]).
 for(Max, Max, F) -> [F(Max)];
 for(I, Max, F)   -> [F(I)|for(I+1, Max, F)].
 
+consult(File) ->
+    case file:open(File, read) of
+        {ok, S} ->
+            Val = consultl(S),
+            file:close(S),
+            {ok, Val};
+        {error, Why} ->
+            {error, Why}
+    end.
+
+consultl(S) ->
+    case io:read(S, '') of
+        {ok, Term}  -> [Term | consultl(S)];
+        eof         -> [];
+        Error       -> Error
+    end.
 
 keep_alive(Name, Fun) ->
     register(Name, Pid = spawn(Fun)),
